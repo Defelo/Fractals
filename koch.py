@@ -59,7 +59,7 @@ class Koch(QWidget):
 
         curve = self.iterations[self.current_iteration]
         for p1, p2 in zip(curve[:-1], curve[1:]):
-            qp.drawLine(p1.x, p1.y, p2.x, p2.y)
+            qp.drawLine(*p1, *p2)
 
 
 if __name__ == '__main__':

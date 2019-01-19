@@ -17,6 +17,10 @@ class Point:
     def __repr__(self) -> str:
         return f"Point(x={self.x}, y={self.y})"
 
+    def __iter__(self):
+        yield self.x
+        yield self.y
+
     def __add__(self, other):
         assert isinstance(other, Point)
         return Point(self.x + other.x, self.y + other.y)
