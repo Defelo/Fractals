@@ -58,6 +58,9 @@ class FlowSnake(QWidget):
         self.iterations = [[Line(Vector(480, FS_VECTOR.angle + 90), True)]]
         self.current_iteration = 0
 
+        self.points = []
+        self.prepare_drawing()
+
         self.show()
 
     def keyPressEvent(self, e: QKeyEvent):
@@ -68,6 +71,7 @@ class FlowSnake(QWidget):
                 self.current_iteration += 1
                 if len(self.iterations) <= self.current_iteration:
                     self.iterations.append(self.flowsnake(self.iterations[-1]))
+                    self.prepare_drawing()
                 self.setWindowTitle(f"Flow Snake - Iteration {self.current_iteration}")
                 self.repaint()
         elif e.key() == Qt.Key_Left:
@@ -83,14 +87,7 @@ class FlowSnake(QWidget):
             out += line.flowsnake()
         return out
 
-    def paintEvent(self, e: QPaintEvent):
-        qp = QPainter(self)
-        qp.setPen(Qt.white)
-        qp.setBrush(Qt.white)
-        qp.drawRect(self.rect())
-
-        qp.setPen(QPen(Qt.black, 1))
-
+    def prepare_drawing(self):
         lines = self.iterations[self.current_iteration]
         p = Point(0, 0)
         minx, miny = maxx, maxy = p
@@ -105,8 +102,19 @@ class FlowSnake(QWidget):
 
         midpoint = Point((maxx + minx) / 2, (maxy + miny) / 2)
         midpoint = Point(self.width() / 2, self.height() / 2) - midpoint
+        self.points.append([p + midpoint for p in points])
+
+    def paintEvent(self, e: QPaintEvent):
+        qp = QPainter(self)
+        qp.setPen(Qt.white)
+        qp.setBrush(Qt.white)
+        qp.drawRect(self.rect())
+
+        qp.setPen(QPen(Qt.black, 1))
+
+        points = self.points[self.current_iteration]
         for p1, p2 in zip(points[:-1], points[1:]):
-            qp.drawLine(*(p1 + midpoint), *(p2 + midpoint))
+            qp.drawLine(*p1, *p2)
 
 
 if __name__ == '__main__':
