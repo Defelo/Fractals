@@ -59,6 +59,22 @@ class Vector:
     def __repr__(self) -> str:
         return f"Vector(distance={self.distance}, angle={self.angle})"
 
+    def __add__(self, other):
+        assert isinstance(other, Vector)
+        return (self.to_point() + other.to_point()).to_vector()
+
+    def __sub__(self, other):
+        assert isinstance(other, Vector)
+        return (self.to_point() - other.to_point()).to_vector()
+
+    def __mul__(self, other):
+        assert isinstance(other, int) or isinstance(other, float)
+        return Point(self.distance * other, self.angle)
+
+    def __truediv__(self, other):
+        assert isinstance(other, int) or isinstance(other, float)
+        return Point(self.distance / other, self.angle)
+
     def to_point(self):
         angle = self.angle % 360
         distance = self.distance
