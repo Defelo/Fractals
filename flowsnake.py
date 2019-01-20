@@ -53,13 +53,15 @@ class FlowSnake(QWidget):
         super().__init__()
 
         self.setWindowTitle("Flow Snake - Iteration 0")
-        self.setFixedSize(600, 600)
+        self.setFixedSize(650, 650)
 
         self.iterations = [[Line(Vector(480, FS_VECTOR.angle + 90), True)]]
         self.current_iteration = 0
 
         self.points = []
         self.prepare_drawing()
+        for i in range(4):
+            self.next()
 
         self.show()
 
@@ -67,18 +69,24 @@ class FlowSnake(QWidget):
         if e.key() == Qt.Key_Q:
             self.close()
         elif e.key() == Qt.Key_Right:
-            if self.current_iteration < 7:
-                self.current_iteration += 1
-                if len(self.iterations) <= self.current_iteration:
-                    self.iterations.append(self.flowsnake(self.iterations[-1]))
-                    self.prepare_drawing()
-                self.setWindowTitle(f"Flow Snake - Iteration {self.current_iteration}")
-                self.repaint()
+            self.next()
         elif e.key() == Qt.Key_Left:
-            if self.current_iteration > 0:
-                self.current_iteration -= 1
-                self.setWindowTitle(f"Flow Snake - Iteration {self.current_iteration}")
-                self.repaint()
+            self.prev()
+
+    def prev(self):
+        if self.current_iteration > 0:
+            self.current_iteration -= 1
+            self.setWindowTitle(f"Flow Snake - Iteration {self.current_iteration}")
+            self.repaint()
+
+    def next(self):
+        if self.current_iteration < 7:
+            self.current_iteration += 1
+            if len(self.iterations) <= self.current_iteration:
+                self.iterations.append(self.flowsnake(self.iterations[-1]))
+                self.prepare_drawing()
+            self.setWindowTitle(f"Flow Snake - Iteration {self.current_iteration}")
+            self.repaint()
 
     @staticmethod
     def flowsnake(fs: List[Line]) -> List[Line]:
@@ -106,14 +114,35 @@ class FlowSnake(QWidget):
 
     def paintEvent(self, e: QPaintEvent):
         qp = QPainter(self)
-        qp.setPen(Qt.white)
-        qp.setBrush(Qt.white)
+        col = QColor("#111111")
+        qp.setPen(col)
+        qp.setBrush(col)
         qp.drawRect(self.rect())
 
-        qp.setPen(QPen(Qt.black, 1))
+        colors = [
+            0xff0000,
+            0xffff00,
+            0x008800,
+            0x00ffff,
+            0x0000ff,
+        ]
 
         points = self.points[self.current_iteration]
-        for p1, p2 in zip(points[:-1], points[1:]):
+        lines = len(points) - 1
+        for i, (p1, p2) in enumerate(zip(points[:-1], points[1:])):
+            p = i / lines
+            c = p * (len(colors) - 1)
+            color = int(c)
+            p = c - int(c)
+            color1 = [colors[color] >> j & 0xff for j in range(16, -1, -8)]
+            color2 = [colors[color + 1] >> j & 0xff for j in range(16, -1, -8)]
+
+            qp.setPen(QPen(QColor(
+                round(color1[0] * (1 - p) + color2[0] * p),
+                round(color1[1] * (1 - p) + color2[1] * p),
+                round(color1[2] * (1 - p) + color2[2] * p)
+            ), 1))
+
             qp.drawLine(*p1, *p2)
 
 
