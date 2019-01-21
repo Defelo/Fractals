@@ -84,7 +84,7 @@ class Vector:
                 Point(distance, 0),
                 Point(0, distance),
                 Point(-distance, 0)
-            ][int(angle / 90)]
+            ][(int(self.angle) % 360) // 90]
 
         if angle > 180:
             angle -= 180
