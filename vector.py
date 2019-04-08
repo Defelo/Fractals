@@ -38,14 +38,11 @@ class Point:
         return Point(self.x / other, self.y / other)
 
     def to_vector(self):
-        x, y = self.x, self.y
-        if y == 0:
-            return Vector(x, 90)
-        distance = math.sqrt(x ** 2 + y ** 2)
-        angle = rad2deg(math.atan(-x / y))
-        if y > 0:
-            distance *= -1
-        return Vector(distance, angle)
+        if not self.x:
+            return Vector(-self.y, 0)
+        a = math.atan(self.y / self.x)
+        d = self.x / math.cos(a)
+        return Vector(d, rad2deg(a) + 90)
 
 
 class Vector:
@@ -76,20 +73,7 @@ class Vector:
         return Point(self.distance / other, self.angle)
 
     def to_point(self):
-        angle = self.angle % 360
-        distance = self.distance
-        if angle % 90 == 0:
-            return [
-                Point(0, -distance),
-                Point(distance, 0),
-                Point(0, distance),
-                Point(-distance, 0)
-            ][(int(self.angle) % 360) // 90]
-
-        if angle > 180:
-            angle -= 180
-            distance *= -1
-
-        w = -1 / math.tan(deg2rad(angle))
-        x = distance / math.sqrt(w ** 2 + 1)
-        return Point(x, w * x)
+        return Point(
+            math.cos(deg2rad(self.angle - 90)) * self.distance,
+            math.sin(deg2rad(self.angle - 90)) * self.distance
+        )
