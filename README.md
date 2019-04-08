@@ -1,2 +1,2 @@
 # Fractals
-Fractals and Space Filling Curves
+Fractals, Space Filling Curves and more
