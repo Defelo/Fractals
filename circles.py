@@ -1,5 +1,3 @@
-import random
-
 from PyQt5.QtCore import *
 from PyQt5.QtGui import *
 from PyQt5.QtWidgets import *
@@ -17,7 +15,8 @@ class Circles(QWidget):
         self.timer = QBasicTimer()
         self.timer.start(20, self)
 
-        self.angle = 0
+        self.angle1 = 0
+        self.angle2 = 90
         self.last_point = None
 
         self.img = QImage(self.width(), self.height(), QImage.Format_ARGB32)
@@ -27,7 +26,8 @@ class Circles(QWidget):
 
     def timerEvent(self, e: QTimerEvent):
         if e.timerId() == self.timer.timerId():
-            self.angle += 17
+            self.angle1 += 2
+            self.angle2 += 7
             self.repaint()
 
     def keyReleaseEvent(self, e: QKeyEvent):
@@ -44,17 +44,18 @@ class Circles(QWidget):
         qp.drawImage(0, 0, self.img)
 
         center = Point(self.width() / 2, self.height() / 2)
-        length = random.randint(100, 200)
-        end = center + Vector(length, self.angle).to_point()
+        p1 = center + Vector(120, self.angle1).to_point()
+        p2 = p1 + Vector(100, self.angle2).to_point()
         qp.setPen(QPen(Qt.black, 2))
-        qp.drawLine(*center, *end)
+        qp.drawLine(*center, *p1)
+        qp.drawLine(*p1, *p2)
 
         self.ip.setPen(QPen(Qt.black, 2))
-        self.ip.drawPoint(*end)
+        self.ip.drawPoint(*p2)
 
         if self.last_point:
-            self.ip.drawLine(*self.last_point, *end)
-        self.last_point = end
+            self.ip.drawLine(*self.last_point, *p2)
+        self.last_point = p2
 
 
 if __name__ == '__main__':
